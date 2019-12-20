@@ -19,6 +19,26 @@ type edge struct {
 	end   point
 }
 
+func len(e edge) int {
+	return dist(e.start, e.end)
+}
+
+func dist(p1 point, p2 point) int {
+	if p1.x != p2.x {
+		return absInt(p1.x - p2.x)
+	} else {
+		return absInt(p1.y - p2.y)
+	}
+}
+
+func absInt(i int) int {
+	if i < 0 {
+		return -i
+	} else {
+		return i
+	}
+}
+
 func vertical(e edge) bool {
 	return e.start.x == e.end.x
 }
@@ -89,15 +109,20 @@ func readWire(input string) []edge {
 
 func nearestInt(w1 []edge, w2 []edge) int {
 	min := math.MaxFloat64
+	var dist1 int
+	var dist2 int
 	for _, e1 := range w1 {
+		dist2 = 0
 		for _, e2 := range w2 {
 			if inter, p := e1.intersect(e2); inter{
 				if p.x == 0 && p.y == 0 {
 					continue
 				}
-				min = math.Min(min, math.Abs(float64(p.x))+math.Abs(float64(p.y)))
+				min = math.Min(min, float64(dist1 + dist(e1.start, p) + dist2 + dist(e2.start, p)))
 			}
+			dist2 += len(e2)
 		}
+		dist1 += len(e1)
 	}
 	return int(min)
 }
