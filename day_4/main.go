@@ -13,7 +13,6 @@ func main() {
 	var count int
 	for i := lower; i <= upper; i++ {
 		if accept(i) {
-			fmt.Println(i)
 			count++
 		}
 	}
@@ -29,6 +28,11 @@ func accept(num int) bool {
 		if !exist {
 			m[v] = 1
 		} else {
+			m[v] = m[v] + 1
+		}
+	}
+	for _, v := range m {
+		if v == 2 {
 			dup = true
 			break
 		}
