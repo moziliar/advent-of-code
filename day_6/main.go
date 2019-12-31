@@ -3,13 +3,14 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strings"
 )
 
 func main() {
 	reader := bufio.NewScanner(os.Stdin)
-	orbits := make(map[string]string)
+	orbits := make(map[string][]string)
 	for reader.Scan() {
 		input := strings.Split(reader.Text(), ")")
 		prevName := input[0]
@@ -17,23 +18,26 @@ func main() {
 
 		_, exists := orbits[prevName]
 		if !exists {
-			orbits[prevName] = "nil"
+			orbits[prevName] = []string{}
 		}
 
-		orbits[currName] = prevName
+		orbits[prevName] = append(orbits[prevName], currName)
+		orbits[currName] = append(orbits[currName], prevName)
+
 	}
 
-	fmt.Println(orbits)
-	var count int
-	for key, _ := range orbits {
-		count += recCount(orbits, key)
-	}
-	fmt.Println(count)
+	fmt.Println(findSSSP(orbits, "", "YOU", 0))
 }
 
-func recCount(m map[string]string, orbit string) int {
-	if orbit == "nil" || m[orbit] == "nil" {
-		return 0
+func findSSSP(m map[string][]string, from string, orbit string, count int) int {
+	min := 10000000
+	for _, value := range m[orbit] {
+		if value == "SAN" {
+			return count
+		} else if value == from {
+			continue
+		}
+		min = int(math.Min(float64(findSSSP(m, orbit, value, count+1)), float64(min)))
 	}
-	return 1 + recCount(m, m[orbit])
+	return min
 }
